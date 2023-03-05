@@ -1,0 +1,58 @@
+version: "3"
+services:
+
+  webserver:
+    build:
+      context: .
+      args:
+        UNAME: ${HOST_USERNAME}
+        UID: ${HOST_USER_ID:-1000}
+        GID: ${HOST_GROUP_ID:-1000}
+    container_name: "${PROJECT_NAME}-web"
+    restart: unless-stopped
+    ports:
+      - "${PROJECT_PORT}:80"
+    environment:
+      APACHE_DOCUMENT_ROOT: ${PUBLIC_DOCUMENT_ROOT}
+      PUBLIC_PORT: ${PROJECT_PORT}
+    volumes:
+      - ./repository:/var/www/html
+
+  database:
+    image: mysql:8.0
+    container_name: "${PROJECT_NAME}-db"
+    restart: unless-stopped
+    ports:
+      - ${MYSQL_PORT}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+    volumes:
+      - database:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: "${PROJECT_NAME}-pma"
+    restart: unless-stopped
+    ports:
+      - "${PMA_PORT}:80"
+    depends_on:
+      - database
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: ${MYSQL_HOST}
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
+
+  mailer:
+    image: schickling/mailcatcher
+    container_name: "${PROJECT_NAME}-mail"
+    ports:
+      - 1025
+      - "${MAILER_PORT}:1080"
+
+volumes:
+  webserver:
+  database:
