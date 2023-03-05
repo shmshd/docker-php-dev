@@ -12,7 +12,7 @@ RUN apt update; \
     libcurl4-openssl-dev \
     openssl \
     vim \
-    curl \
+    cron \
     nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
