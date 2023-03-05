@@ -3,7 +3,7 @@ FROM php:8.0-apache
 RUN apt update; \
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -; \
     apt install -y --no-install-recommends  \
-    zip libzip-dev \
+    zip unzip libzip-dev \
     libsodium-dev \
     libonig-dev \
     zlib1g-dev \
